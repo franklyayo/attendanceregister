@@ -1,6 +1,7 @@
 import { db } from "@/utils";
 import { GRADES } from "@/utils/schema";
 import { NextResponse } from "next/server";
+export const dynamic = 'force-dynamic';
 
 export async function GET(req){
     
