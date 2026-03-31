@@ -3,6 +3,9 @@ import { ATTENDANCE, STUDENTS } from "@/utils/schema";
 import { and, asc, eq, isNull, or } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;   // Increase timeout to 60 seconds (only works if you upgrade Vercel to Pro later)
+
 export async function GET(req) {
 
     const searchParams = req.nextUrl.searchParams;
