@@ -3,7 +3,7 @@ import { ATTENDANCE, STUDENTS } from "@/utils/schema";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-export const dynamic = 'force-dynamic';   // ← Add this
+export const dynamic = 'force-dynamic';   // ← prevents build issues too
 
 export async function GET(req) {
   const searchParams = req.nextUrl.searchParams;
@@ -23,7 +23,7 @@ export async function GET(req) {
     .leftJoin(STUDENTS, eq(ATTENDANCE.studentId, STUDENTS.id))
     .where(
       and(
-        eq(ATTENDANCE.date, date),      // ← moved here (much faster)
+        eq(ATTENDANCE.date, date),
         eq(STUDENTS.grade, grade)
       )
     )
