@@ -7,37 +7,30 @@ function PieChartComponent({ attendanceList, selectedMonth }) {
     const [data, setData] = useState([])
 
     useEffect(() => {
-        if (!attendanceList || !selectedMonth) return
+        if (!attendanceList || attendanceList.length === 0 || !selectedMonth) {
+            setData([])
+            return
+        }
 
         const uniqueStudents = getUniqueRecord(attendanceList)
         const totalStudents = uniqueStudents.length
 
-        // Number of days in the selected month
-        const daysInMonth = moment(selectedMonth).daysInMonth()
+        // Get unique days that actually have attendance records
+        const uniqueDays = [...new Set(attendanceList.map(item => item.day))]
+        const daysWithData = uniqueDays.length
 
-        // Total possible attendance records
-        const totalPossible = totalStudents * daysInMonth
-
-        // Total present records (attendanceList only contains presents)
+        const totalPossible = totalStudents * daysWithData
         const totalPresent = attendanceList.length
 
-        const presentPercentage = totalPossible > 0 
-            ? Math.round((totalPresent / totalPossible) * 100 * 10) / 10 
+        const presentPercentage = totalPossible > 0
+            ? Math.round((totalPresent / totalPossible) * 100 * 10) / 10
             : 0
 
         const absentPercentage = 100 - presentPercentage
 
         setData([
-            {
-                name: 'Total Present',
-                value: presentPercentage,
-                fill: '#4c8cf8',
-            },
-            {
-                name: 'Total Absent',
-                value: absentPercentage,
-                fill: '#1fe6d1',
-            }
+            { name: 'Total Present', value: presentPercentage, fill: '#4c8cf8' },
+            { name: 'Total Absent',  value: absentPercentage,  fill: '#1fe6d1' }
         ])
     }, [attendanceList, selectedMonth])
 
