@@ -5,21 +5,24 @@ import { Pie, PieChart, ResponsiveContainer, Cell, Tooltip, Legend } from 'recha
 
 function PieChartComponent({ attendanceList, selectedMonth }) {
     const [data, setData] = useState([])
+    const [maxDay, setMaxDay] = useState(0)
 
     useEffect(() => {
         if (!attendanceList || attendanceList.length === 0 || !selectedMonth) {
             setData([])
+            setMaxDay(0)
             return
         }
 
         const uniqueStudents = getUniqueRecord(attendanceList)
         const totalStudents = uniqueStudents.length
 
-        // Get unique days that actually have attendance records
-        const uniqueDays = [...new Set(attendanceList.map(item => item.day))]
-        const daysWithData = uniqueDays.length
+        // Get the highest day that has attendance records
+        const daysWithData = [...new Set(attendanceList.map(item => item.day))]
+        const latestDay = daysWithData.length > 0 ? Math.max(...daysWithData) : 0
+        setMaxDay(latestDay)
 
-        const totalPossible = totalStudents * daysWithData
+        const totalPossible = totalStudents * daysWithData.length
         const totalPresent = attendanceList.length
 
         const presentPercentage = totalPossible > 0
@@ -36,7 +39,13 @@ function PieChartComponent({ attendanceList, selectedMonth }) {
 
     return (
         <div className='border p-5 rounded-lg'>
-            <h2 className='font-bold text-lg'>Monthly Attendance</h2>
+            <div className='flex justify-between items-baseline'>
+                <h2 className='font-bold text-lg'>Monthly Attendance</h2>
+                {maxDay > 0 && (
+                    <p className='text-sm text-gray-500'>as of day {maxDay}</p>
+                )}
+            </div>
+            
             <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                     <Pie
