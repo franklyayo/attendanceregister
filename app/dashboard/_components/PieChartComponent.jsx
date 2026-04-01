@@ -1,60 +1,71 @@
 import { getUniqueRecord } from '@/app/_services/service'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { Pie, PieChart, ResponsiveContainer } from 'recharts'
+import { Pie, PieChart, ResponsiveContainer, Cell, Tooltip, Legend } from 'recharts'
 
-function PieChartComponent({attendanceList}) {
-    const data01 = [
-        {
-          "name": "Group A",
-          "value": 400,
-          
-        },
-        {
-          "name": "Group B",
-          "value": 300
-        },
-    ]
-    const [data,setData]=useState([])
+function PieChartComponent({ attendanceList, selectedMonth }) {
+    const [data, setData] = useState([])
 
-    useEffect(()=>{
-        console.log(attendanceList)
-        if(attendanceList)
-        {
-                const totalSt=getUniqueRecord(attendanceList);
-                const today=moment().format('D');
-                const PresentPrec=(attendanceList.length/(totalSt.length*Number(today))*100);
-                setData([
-                    {
-                        name:'Total Present',
-                        value:Number(PresentPrec.toFixed(1)),
-                        fill:'#4c8cf8',
-                        label:'Total Present'
-                    },
-                    {
-                        name:'Total Absent',
-                        value:(100-Number(PresentPrec.toFixed(1))),
-                        fill:'#1fe6d1'
-                    },
-                ])
-               
-        }
-    },[attendanceList])
+    useEffect(() => {
+        if (!attendanceList || !selectedMonth) return
 
-  return (
-    <div className='border p-5 rounded-lg'>
-        <h2 className='font-bold text-lg'>Monthly Attendance</h2>
-        <ResponsiveContainer width={'100%'} height={300}>
+        const uniqueStudents = getUniqueRecord(attendanceList)
+        const totalStudents = uniqueStudents.length
 
-    <PieChart width={730} height={250}>
-        <Pie data={data} dataKey="value"
-        nameKey="name" cx="50%" cy="50%" 
-        innerRadius={60} outerRadius={80}  label />
-        </PieChart>
-        
-        </ResponsiveContainer>
-    </div>
-  )
+        // Number of days in the selected month
+        const daysInMonth = moment(selectedMonth).daysInMonth()
+
+        // Total possible attendance records
+        const totalPossible = totalStudents * daysInMonth
+
+        // Total present records (attendanceList only contains presents)
+        const totalPresent = attendanceList.length
+
+        const presentPercentage = totalPossible > 0 
+            ? Math.round((totalPresent / totalPossible) * 100 * 10) / 10 
+            : 0
+
+        const absentPercentage = 100 - presentPercentage
+
+        setData([
+            {
+                name: 'Total Present',
+                value: presentPercentage,
+                fill: '#4c8cf8',
+            },
+            {
+                name: 'Total Absent',
+                value: absentPercentage,
+                fill: '#1fe6d1',
+            }
+        ])
+    }, [attendanceList, selectedMonth])
+
+    return (
+        <div className='border p-5 rounded-lg'>
+            <h2 className='font-bold text-lg'>Monthly Attendance</h2>
+            <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                    <Pie
+                        data={data}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        label={({ value }) => `${value}%`}
+                    >
+                        {data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                </PieChart>
+            </ResponsiveContainer>
+        </div>
+    )
 }
 
 export default PieChartComponent
