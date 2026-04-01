@@ -43,7 +43,10 @@ function Dashboard() {
             </div>
 
             {/* Cards (Total Present / Absent / etc.) */}
-            <StatusList attendanceList={attendanceList} />
+          <StatusList 
+            attendanceList={attendanceList} 
+            selectedMonth={selectedMonth} 
+          />
 
             <div className='grid grid-cols-1 md:grid-cols-3 gap-5 mt-8'>
                 {/* Bar Chart */}
