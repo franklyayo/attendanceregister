@@ -8,39 +8,50 @@ import React, { useState, useEffect } from 'react'
 import AttendanceGrid from './_components/AttendanceGrid'
 
 function Attendance() {
-    const [selectedMonth, setSelectedMonth] = useState();
+    const [selectedMonth, setSelectedMonth] = useState(moment()); // default = current month
     const [selectedGrade, setSelectedGrade] = useState('Technical');
     const [attendanceList, setAttendanceList] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Auto-load attendance when the page opens (using default grade)
+    // Auto-load on page open
     useEffect(() => {
-        if (selectedGrade) {
-            const month = moment().format('MM/YYYY');   // current month as default
-            GlobalApi.GetAttendanceList(selectedGrade, month).then(resp => {
-                console.log("Attendance loaded:", resp.data)
+        const month = moment(selectedMonth).format('MM/YYYY');
+        setLoading(true);
+
+        GlobalApi.GetAttendanceList(selectedGrade, month)
+            .then(resp => {
+                console.log("Attendance loaded:", resp.data);
                 setAttendanceList(resp.data || []);
-            }).catch(err => {
-                console.error("Attendance fetch error:", err)
+            })
+            .catch(err => {
+                console.error("Attendance fetch error:", err);
                 setAttendanceList([]);
+            })
+            .finally(() => {
+                setLoading(false);
             });
-        }
-    }, [selectedGrade]);
+    }, [selectedGrade, selectedMonth]);
 
     const onSearchHandler = () => {
         const month = moment(selectedMonth).format('MM/YYYY');
-        GlobalApi.GetAttendanceList(selectedGrade, month).then(resp => {
-            console.log("Search result:", resp.data)
-            setAttendanceList(resp.data || []);
-        }).catch(err => {
-            console.error(err)
-            setAttendanceList([]);
-        });
-    }
+        setLoading(true);
+
+        GlobalApi.GetAttendanceList(selectedGrade, month)
+            .then(resp => {
+                console.log("Search result:", resp.data);
+                setAttendanceList(resp.data || []);
+            })
+            .catch(err => {
+                console.error(err);
+                setAttendanceList([]);
+            })
+            .finally(() => setLoading(false));
+    };
 
     return (
         <div className='p-10'>
             <h2 className='text-2xl font-bold'>Service Unit Attendance</h2>
-            
+
             {/* Search option */}
             <div className='flex gap-5 my-5 p-5 border rounded-lg shadow-sm'>
                 <div className='flex gap-2 items-center'>
@@ -58,6 +69,7 @@ function Attendance() {
             <AttendanceGrid 
                 attendanceList={attendanceList} 
                 selectedMonth={selectedMonth}
+                loading={loading}          // ← pass loading state
             />
         </div>
     )
