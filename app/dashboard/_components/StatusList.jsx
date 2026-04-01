@@ -9,18 +9,20 @@ function StatusList({ attendanceList, selectedMonth }) {
     const [presentPerc, setPresentPerc] = useState(0);
 
     useEffect(() => {
-        if (!attendanceList || !selectedMonth) return;
+        if (!attendanceList || attendanceList.length === 0 || !selectedMonth) {
+            setTotalStudent(0);
+            setPresentPerc(0);
+            return;
+        }
 
         const uniqueStudents = getUniqueRecord(attendanceList);
         const totalStudents = uniqueStudents.length;
 
-        // Number of days in the selected month
-        const daysInMonth = moment(selectedMonth).daysInMonth();
+        // Unique days that have attendance records so far
+        const uniqueDays = [...new Set(attendanceList.map(item => item.day))];
+        const daysWithData = uniqueDays.length;
 
-        // Total possible attendance slots
-        const totalPossible = totalStudents * daysInMonth;
-
-        // Total present records
+        const totalPossible = totalStudents * daysWithData;
         const totalPresent = attendanceList.length;
 
         const presentPercentage = totalPossible > 0
@@ -35,21 +37,9 @@ function StatusList({ attendanceList, selectedMonth }) {
 
     return (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 my-6'>
-            <Card 
-                icon={<GraduationCap />} 
-                title='Total Members' 
-                value={totalStudent} 
-            />
-            <Card 
-                icon={<TrendingUp />} 
-                title='Total Present' 
-                value={presentPerc.toFixed(1) + '%'} 
-            />
-            <Card 
-                icon={<TrendingDown />} 
-                title='Total Absent' 
-                value={absentPerc.toFixed(1) + '%'} 
-            />
+            <Card icon={<GraduationCap />} title='Total Members' value={totalStudent} />
+            <Card icon={<TrendingUp />} title='Total Present' value={presentPerc.toFixed(1) + '%'} />
+            <Card icon={<TrendingDown />} title='Total Absent' value={absentPerc.toFixed(1) + '%'} />
         </div>
     );
 }
