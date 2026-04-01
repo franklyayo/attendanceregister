@@ -1,40 +1,108 @@
+# Attendance Register
 
-![Student Attendance Tracking Banner](https://github.com/rrs301/Student-Attendance-Tracking/assets/20216436/28df9edf-a5e8-4df4-a6a5-243b43c75225)
+A modern web application for managing service unit attendance. Built with Next.js 14, Drizzle ORM, Azure MySQL, and deployed on Vercel.
 
+## ✨ Features
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+- Secure authentication using **Kinde Auth**
+- Add, view, and manage students/members
+- Mark daily attendance with inline editing in a powerful data grid
+- Filter attendance records by **Month** and **Service Unit (Grade)**
+- Dashboard with attendance summaries
+- Clean, responsive UI built with Tailwind CSS and shadcn/ui
+- Fast and interactive attendance table using **AG Grid**
 
-## Getting Started
+## 🛠 Tech Stack
 
-First, run the development server:
+| Layer              | Technology                              |
+|--------------------|-----------------------------------------|
+| Frontend           | Next.js 14 (App Router) + React         |
+| Styling            | Tailwind CSS + shadcn/ui                |
+| Database           | Azure Database for MySQL (Flexible Server) |
+| ORM                | Drizzle ORM                             |
+| Authentication     | Kinde Auth                              |
+| Data Table         | AG Grid React                           |
+| HTTP Client        | Axios (via GlobalApi)                   |
+| Deployment         | Vercel                                  |
+
+## 📁 Project Structure
 
 ```bash
+app/
+├── api/                          # API Routes
+│   ├── grade/
+│   ├── student/
+│   ├── attendance/
+│   ├── dashboard/
+│   └── auth/                     # Kinde authentication routes
+├── dashboard/
+│   ├── attendance/
+│   │   └── _components/AttendanceGrid.jsx
+│   ├── students/
+│   └── page.js
+├── _components/                  # Reusable UI components
+│   ├── GradeSelect.jsx
+│   └── MonthSelection.jsx
+├── _services/
+│   └── GlobalApi.js              # Centralized API service
+utils/
+├── index.js                      # Database connection (Drizzle + mysql2)
+└── schema.js                     # Database schema definitions
+
+git clone https://github.com/franklyayo/attendanceregister.git
+cd attendanceregister
+
+npm install
+
+# Database Configuration (Azure MySQL)
+NEXT_PUBLIC_HOST=attendanceappserver2.mysql.database.azure.com
+NEXT_PUBLIC_DATABASE=attendancedb
+NEXT_PUBLIC_USER=attendanceuser@attendanceappserver2
+NEXT_DB_PASSWORD=YourStrongPasswordHere
+
+# Kinde Authentication
+KINDE_CLIENT_ID=your_kinde_client_id
+KINDE_CLIENT_SECRET=your_kinde_client_secret
+KINDE_ISSUER_URL=https://your-domain.kinde.com
+KINDE_SITE_URL=http://localhost:3000
+KINDE_POST_LOGOUT_REDIRECT_URL=http://localhost:3000
+KINDE_POST_LOGIN_REDIRECT_URL=http://localhost:3000/dashboard
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Database
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Host: Azure Database for MySQL (Flexible Server)
+Tables: grades, students, attendance
+ORM: Drizzle ORM
+Key indexes are added on date, grade, and studentId for performance.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+🔑 Important Notes
 
-## Learn More
+The database connection is initialized in utils/index.js
+All API calls are centralized in app/_services/GlobalApi.js
+Azure MySQL requires SSL configuration (rejectUnauthorized: false)
+The attendance grid supports inline cell editing for marking present/absent
 
-To learn more about Next.js, take a look at the following resources:
+🚀 Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Deployed on Vercel with automatic deployments from GitHub
+Live URL: https://attendanceregister.vercel.app
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+📝 For New Developers
 
-## Deploy on Vercel
+API Routes: Located in app/api/[route]/route.js
+Main Pages: app/dashboard/*
+Database Schema: Check utils/schema.js
+Global API Service: app/_services/GlobalApi.js
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+🤝 Contributing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Fork the project
+Create your feature branch (git checkout -b feature/your-feature)
+Commit your changes (git commit -m 'Add your feature')
+Push to the branch (git push origin feature/your-feature)
+Open a Pull Request
+
+📄 License
+This project is open source and available under the MIT License.
